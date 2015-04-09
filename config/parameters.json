@@ -1,0 +1,3 @@
+{
+    "template.smarty.plugin.asset": "%path%/src/ride/web/template/smarty/plugin"
+}
