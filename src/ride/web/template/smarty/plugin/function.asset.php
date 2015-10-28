@@ -48,13 +48,25 @@ function smarty_function_asset($params, &$smarty) {
         $imageUrlGenerator = $dependencyInjector->get('ride\\library\\image\\ImageUrlGenerator');
         $image = null;
 
+        if (isset($styles[$style])) {
+            $transformations = $styles[$style];
+        } else {
+            $ormManager = $dependencyInjector->get('ride\\library\\orm\\OrmManager');
+            $styleModel = $ormManager->getImageStyleModel();
+
+            $styleObj = $styleModel->getBy(array('filter' => array('slug' => $style)));
+            if (!$styleObj) {
+                throw new Exception('Could not load asset #' . $asset->getId() . ': style ' . $style . ' is not available');
+            }
+
+            $transformations = $styleObj->getTransformationArray();
+
+            $styles[$styleObj->getSlug()] = $transformations;
+        }
+
         // check for overriden style image
         if ($style) {
             $image = $asset->getStyleImage($style);
-            if ($image) {
-                // get url for the provided image
-                $src = $imageUrlGenerator->generateUrl($image, $transformation, $params);
-            }
         }
 
         if (!$image) {
@@ -63,40 +75,14 @@ function smarty_function_asset($params, &$smarty) {
             if (!$image && $default) {
                 $image = $default;
             }
+        }
 
-            if (!$image) {
-                // no image resolved
-                $src = null;
-            } else {
-                // gather style transformations
-                if (isset($styles[$style])) {
-                    $transformations = $styles[$style];
-                } else {
-                    $ormManager = $dependencyInjector->get('ride\\library\\orm\\OrmManager');
-                    $styleModel = $ormManager->getImageStyleModel();
-
-                    $style = $styleModel->getBy(array('filter' => array('slug' => $style)));
-                    if (!$style) {
-                        throw new Exception('Could not load asset #' . $asset->getId() . ': style ' . $style . ' is not available');
-                    }
-
-                    $transformations = $style->getTransformationArray();
-
-                    $styles[$style->getSlug()] = $transformations;
-                }
-
-                // add template transformation
-                if ($transformation) {
-                    if (isset($transformations[$transformation])) {
-                        unset($transformations[$transformation]);
-                    }
-
-                    $transformations[$transformation] = $params;
-                }
-
-                // get url for the provided image
-                $src = $imageUrlGenerator->generateUrl($image, $transformations);
-            }
+        if (!$image) {
+            // no image resolved
+            $src = null;
+        } else {
+            // get url for the provided image
+            $src = $imageUrlGenerator->generateUrl($image, $transformations);
         }
 
         if ($var === null) {
