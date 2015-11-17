@@ -11,6 +11,7 @@
     ],
     "require": {
         "ride/app-orm-asset": ">=0.2.0",
+        "ride/wba-assets": ">=0.8.1",
         "ride/web-image": ">=0.7.0"
     }
 }
