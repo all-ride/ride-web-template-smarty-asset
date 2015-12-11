@@ -2,7 +2,7 @@
     "name": "ride/web-template-smarty-asset",
     "description": "Smarty template integration for the asset library of the Ride framework",
     "license": "MIT",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "authors": [
         {
             "name": "Joris Vandeweerd",
