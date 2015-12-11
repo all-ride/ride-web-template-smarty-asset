@@ -37,7 +37,7 @@ function smarty_function_asset($params, &$smarty) {
             $service = $dependencyInjector->get('ride\\service\\AssetService');
         }
 
-        $url = $service->getAssetUrl($asset, $style);
+        $url = $service->getAssetUrl($asset, $style, true);
 
         if ($var === null) {
             return $url;
