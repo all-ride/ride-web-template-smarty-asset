@@ -1,6 +1,6 @@
 <?php
 
-use \ride\application\orm\asset\entry\AssetEntry;
+use ride\application\orm\asset\entry\AssetEntry;
 
 function smarty_function_asset($params, &$smarty) {
     static $service = null;
@@ -37,7 +37,14 @@ function smarty_function_asset($params, &$smarty) {
             $service = $dependencyInjector->get('ride\\service\\AssetService');
         }
 
-        $url = $service->getAssetUrl($asset, $style, true);
+        try {
+            $url = $service->getAssetUrl($asset, $style, true);
+        } catch (Exception $exception) {
+            $log = $app['system']->getDependencyInjector()->get('ride\\library\\log\\Log');
+            $log->logException($exception);
+
+            $url = null;
+        }
 
         if ($var === null) {
             return $url;
