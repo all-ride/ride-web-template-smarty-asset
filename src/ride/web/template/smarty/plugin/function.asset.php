@@ -40,8 +40,11 @@ function smarty_function_asset($params, &$smarty) {
         try {
             $url = $service->getAssetUrl($asset, $style, true);
         } catch (Exception $exception) {
-            $log = $app['system']->getDependencyInjector()->get('ride\\library\\log\\Log');
-            $log->logException($exception);
+            $app = $smarty->getTemplateVars('app');
+            if (isset($app['system'])) {
+                $log = $app['system']->getDependencyInjector()->get('ride\\library\\log\\Log');
+                $log->logException($exception);
+            }
 
             $url = null;
         }
